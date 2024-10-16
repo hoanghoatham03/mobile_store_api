@@ -27,7 +27,6 @@ public class ProductController {
     public ResponseEntity<ProductDTO> createProduct(
             @Valid @ModelAttribute ProductDTO productDTO,
             @RequestParam("image") MultipartFile file) {
-
         ProductDTO createdProduct = productService.createProduct(productDTO, file);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
