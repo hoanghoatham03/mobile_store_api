@@ -104,11 +104,11 @@ public class Product {
         this.quantity = quantity;
     }
 
-    public String getCondition() {
+    public String getProductCondition() {
         return productCondition;
     }
 
-    public void setCondition(String productCondition) {
+    public void setProductCondition(String productCondition) {
         this.productCondition = productCondition;
     }
 
