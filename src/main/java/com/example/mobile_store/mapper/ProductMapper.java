@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 @Mapper(componentModel = "spring")
 @Component
 public interface ProductMapper {
+    //@Mapping(target = "image", source = "image")
     ProductDTO toDTO(Product product);
     @Mapping(target = "productCondition", source = "productCondition")
     Product toEntity(ProductDTO productDTO);

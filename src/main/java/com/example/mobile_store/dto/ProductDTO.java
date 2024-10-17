@@ -28,10 +28,13 @@ public class ProductDTO {
     @NotBlank(message = "Product condition is required")
     private String productCondition;
 
+    @NotBlank(message = "Image is required")
+    private String image;
+
     public ProductDTO() {
     }
 
-    public ProductDTO(@NotBlank(message = "Product name is required") String productName, @NotBlank(message = "Item code is required") String itemcode, @NotBlank(message = "Description is required") String description, @NotBlank(message = "Manufacture is required") String manufacture, @NotBlank(message = "Category is required") String category, @NotNull(message = "Price is required") Double price, @NotNull(message = "Quantity is required") Integer quantity, @NotBlank(message = "Product condition is required") String productCondition) {
+    public ProductDTO(@NotBlank(message = "Product name is required") String productName, @NotBlank(message = "Item code is required") String itemcode, @NotBlank(message = "Description is required") String description, @NotBlank(message = "Manufacture is required") String manufacture, @NotBlank(message = "Category is required") String category, @NotNull(message = "Price is required") Double price, @NotNull(message = "Quantity is required") Integer quantity, @NotBlank(message = "Product condition is required") String productCondition, @NotBlank(message = "Image is required") String image) {
         this.productName = productName;
         this.itemcode = itemcode;
         this.description = description;
@@ -40,7 +43,7 @@ public class ProductDTO {
         this.price = price;
         this.quantity = quantity;
         this.productCondition = productCondition;
-
+        this.image = image;
     }
 
     public @NotBlank(message = "Product name is required") String getProductName() {
@@ -105,6 +108,14 @@ public class ProductDTO {
 
     public void setProductCondition(@NotBlank(message = "Product condition is required") String productCondition) {
         this.productCondition = productCondition;
+    }
+
+    public @NotBlank(message = "Image is required") String getImage() {
+        return image;
+    }
+
+    public void setImage(@NotBlank(message = "Image is required") String image) {
+        this.image = image;
     }
 
 

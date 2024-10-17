@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class ProductService {
 
@@ -41,6 +44,21 @@ public class ProductService {
 
 
         return productMapper.toDTO(product);
+    }
+
+    //get all products
+    public List<ProductDTO> getAllProducts() {
+        List<Product> products = productRepository.findAll();
+
+        List<ProductDTO> productDTOs = products.stream()
+                .map(productMapper::toDTO)
+                .collect(Collectors.toList());
+
+
+        String prefix = "http://localhost:8080/resources/images/product/";
+        productDTOs.forEach(dto -> dto.setImage(prefix + dto.getImage()));
+
+        return productDTOs;
     }
 
 
