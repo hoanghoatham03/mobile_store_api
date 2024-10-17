@@ -1,6 +1,7 @@
 package com.example.mobile_store.controller;
 
 
+import com.example.mobile_store.dto.ProductCreateDTO;
 import com.example.mobile_store.dto.ProductDTO;
 import com.example.mobile_store.entity.Product;
 import com.example.mobile_store.service.ProductService;
@@ -25,12 +26,14 @@ public class ProductController {
     //create product
     @PostMapping(value = "/create", consumes = {"multipart/form-data"})
     public ResponseEntity<ProductDTO> createProduct(
-            @Valid @ModelAttribute ProductDTO productDTO,
+            @Valid @ModelAttribute ProductCreateDTO productCreateDTO,
             @RequestParam("image") MultipartFile file) {
-        ProductDTO createdProduct = productService.createProduct(productDTO, file);
+
+        ProductDTO createdProduct = productService.createProduct(productCreateDTO, file);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
     }
+
 
     //get all products
     @GetMapping

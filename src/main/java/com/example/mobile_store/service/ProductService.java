@@ -1,5 +1,6 @@
 package com.example.mobile_store.service;
 
+import com.example.mobile_store.dto.ProductCreateDTO;
 import com.example.mobile_store.dto.ProductDTO;
 import com.example.mobile_store.entity.Product;
 import com.example.mobile_store.mapper.ProductMapper;
@@ -29,22 +30,20 @@ public class ProductService {
     }
 
     //create product
-    public ProductDTO createProduct(ProductDTO productDTO, MultipartFile file) {
+    public ProductDTO createProduct(ProductCreateDTO productCreateDTO, MultipartFile file) {
 
-        Product product = productMapper.toEntity(productDTO);
-
+        Product product = productMapper.toEntity(productCreateDTO);
 
         if (file != null && !file.isEmpty()) {
             String imagePath = uploadService.handleSaveUploadFile(file, "product");
             product.setImage(imagePath);
         }
 
-
         productRepository.save(product);
-
 
         return productMapper.toDTO(product);
     }
+
 
     //get all products
     public List<ProductDTO> getAllProducts() {
