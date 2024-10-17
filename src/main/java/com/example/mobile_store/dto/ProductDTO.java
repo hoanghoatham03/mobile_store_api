@@ -4,6 +4,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public class ProductDTO {
+
+    private Integer id;
+
     @NotBlank(message = "Product name is required")
     private String productName;
 
@@ -34,7 +37,7 @@ public class ProductDTO {
     public ProductDTO() {
     }
 
-    public ProductDTO(@NotBlank(message = "Product name is required") String productName, @NotBlank(message = "Item code is required") String itemcode, @NotBlank(message = "Description is required") String description, @NotBlank(message = "Manufacture is required") String manufacture, @NotBlank(message = "Category is required") String category, @NotNull(message = "Price is required") Double price, @NotNull(message = "Quantity is required") Integer quantity, @NotBlank(message = "Product condition is required") String productCondition, @NotBlank(message = "Image is required") String image) {
+    public ProductDTO(@NotBlank(message = "Product name is required") String productName, @NotBlank(message = "Item code is required") String itemcode, @NotBlank(message = "Description is required") String description, @NotBlank(message = "Manufacture is required") String manufacture, @NotBlank(message = "Category is required") String category, @NotNull(message = "Price is required") Double price, @NotNull(message = "Quantity is required") Integer quantity, @NotBlank(message = "Product condition is required") String productCondition, @NotBlank(message = "Image is required") String image, Integer id) {
         this.productName = productName;
         this.itemcode = itemcode;
         this.description = description;
@@ -44,6 +47,7 @@ public class ProductDTO {
         this.quantity = quantity;
         this.productCondition = productCondition;
         this.image = image;
+        this.id = id;
     }
 
     public @NotBlank(message = "Product name is required") String getProductName() {
@@ -116,6 +120,14 @@ public class ProductDTO {
 
     public void setImage(@NotBlank(message = "Image is required") String image) {
         this.image = image;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
 
