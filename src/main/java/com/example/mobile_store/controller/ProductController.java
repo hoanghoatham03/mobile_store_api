@@ -32,5 +32,13 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
     }
 
+    //get all products
+    @GetMapping
+    public ResponseEntity<?> getAllProducts() {
+        return ResponseEntity.ok(productService.getAllProducts());
+    }
+
+
+
 
 }
