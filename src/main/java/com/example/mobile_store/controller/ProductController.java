@@ -42,6 +42,10 @@ public class ProductController {
     }
 
 
-
+    //view product by id
+    @GetMapping("/{id}")
+    public ResponseEntity<?> viewProductById(@PathVariable Integer id) {
+        return ResponseEntity.ok(productService.getProductById(id));
+    }
 
 }

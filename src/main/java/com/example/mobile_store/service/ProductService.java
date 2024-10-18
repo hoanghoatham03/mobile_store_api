@@ -60,7 +60,18 @@ public class ProductService {
         return productDTOs;
     }
 
+    //view product by id
+    public ProductDTO getProductById(Integer id) {
+        Product product = productRepository.findById(id).orElse(null);
+        if (product == null) {
+            return null;
+        }
 
+        ProductDTO productDTO = productMapper.toDTO(product);
+        productDTO.setImage("http://localhost:8080/resources/images/product/" + productDTO.getImage());
+
+        return productDTO;
+    }
 
 
 }
