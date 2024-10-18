@@ -73,5 +73,8 @@ public class ProductService {
         return productDTO;
     }
 
-
+    //delete product
+    public void deleteProduct(Integer id) {
+        productRepository.deleteById(id);
+    }
 }
