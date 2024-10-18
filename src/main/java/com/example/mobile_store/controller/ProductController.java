@@ -42,6 +42,16 @@ public class ProductController {
     }
 
 
+    //view product by id
+    @GetMapping("/{id}")
+    public ResponseEntity<?> viewProductById(@PathVariable Integer id) {
+        return ResponseEntity.ok(productService.getProductById(id));
+    }
 
-
+    //delete product
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteProduct(@PathVariable Integer id) {
+        productService.deleteProduct(id);
+        return ResponseEntity.ok().build();
+    }
 }
