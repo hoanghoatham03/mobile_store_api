@@ -3,14 +3,20 @@ package com.example.mobile_store.controller;
 
 import com.example.mobile_store.dto.ProductCreateDTO;
 import com.example.mobile_store.dto.ProductDTO;
+import com.example.mobile_store.dto.ProductUpdateDTO;
 import com.example.mobile_store.entity.Product;
 import com.example.mobile_store.service.ProductService;
 import com.example.mobile_store.service.UploadService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")
@@ -35,10 +41,12 @@ public class ProductController {
     }
 
 
-    //get all products
+    //get all products paginated
     @GetMapping
-    public ResponseEntity<?> getAllProducts() {
-        return ResponseEntity.ok(productService.getAllProducts());
+    public ResponseEntity<?> getAllProducts(@RequestParam(defaultValue = "1") Integer pageNo,
+                                           @RequestParam(defaultValue = "2") Integer pageSize) {
+        Pageable pageable = PageRequest.of(pageNo-1, pageSize);
+        return ResponseEntity.ok(productService.getAllProducts(pageable));
     }
 
 
@@ -48,10 +56,32 @@ public class ProductController {
         return ResponseEntity.ok(productService.getProductById(id));
     }
 
+    //update product
+    @PutMapping(value = "/{id}", consumes = {"multipart/form-data"})
+    public ResponseEntity<?> updateProduct(@PathVariable Integer id, @Valid @ModelAttribute ProductUpdateDTO productUpdateDTO,
+                                           @RequestParam(value = "image", required = false) MultipartFile file) {
+        ProductDTO updatedProduct = productService.updateProduct( productUpdateDTO, file, id);
+        return ResponseEntity.ok(updatedProduct);
+    }
+
     //delete product
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteProduct(@PathVariable Integer id) {
         productService.deleteProduct(id);
         return ResponseEntity.ok().build();
     }
+
+    //search product by name
+    @GetMapping("/search")
+    public ResponseEntity<?> searchProductByName(@RequestParam String name) {
+        List<ProductDTO> productDTOS = productService.searchProductByName(name);
+
+        if (productDTOS.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No product found with name: " + name);
+        }
+
+        return ResponseEntity.ok(productDTOS);
+
+    }
+
 }
