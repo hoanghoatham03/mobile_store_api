@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -123,5 +124,16 @@ public class ProductService {
     //delete product
     public void deleteProduct(Integer id) {
         productRepository.deleteById(id);
+    }
+
+    //search product by name
+    public List<ProductDTO> searchProductByName(String name) {
+        List<Product> products = productRepository.findByProductNameContainingIgnoreCase(name);
+
+        List<ProductDTO> productDTOs = products.stream()
+                .map(productMapper::toDTO)
+                .collect(Collectors.toList());
+
+        return productDTOs;
     }
 }

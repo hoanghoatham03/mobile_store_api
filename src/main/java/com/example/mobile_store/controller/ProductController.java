@@ -16,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/products")
 public class ProductController {
@@ -68,4 +70,18 @@ public class ProductController {
         productService.deleteProduct(id);
         return ResponseEntity.ok().build();
     }
+
+    //search product by name
+    @GetMapping("/search")
+    public ResponseEntity<?> searchProductByName(@RequestParam String name) {
+        List<ProductDTO> productDTOS = productService.searchProductByName(name);
+
+        if (productDTOS.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No product found with name: " + name);
+        }
+
+        return ResponseEntity.ok(productDTOS);
+
+    }
+
 }
