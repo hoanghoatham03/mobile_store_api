@@ -3,6 +3,7 @@ package com.example.mobile_store.controller;
 
 import com.example.mobile_store.dto.ProductCreateDTO;
 import com.example.mobile_store.dto.ProductDTO;
+import com.example.mobile_store.dto.ProductUpdateDTO;
 import com.example.mobile_store.entity.Product;
 import com.example.mobile_store.service.ProductService;
 import com.example.mobile_store.service.UploadService;
@@ -51,6 +52,14 @@ public class ProductController {
     @GetMapping("/{id}")
     public ResponseEntity<?> viewProductById(@PathVariable Integer id) {
         return ResponseEntity.ok(productService.getProductById(id));
+    }
+
+    //update product
+    @PutMapping(value = "/{id}", consumes = {"multipart/form-data"})
+    public ResponseEntity<?> updateProduct(@PathVariable Integer id, @Valid @ModelAttribute ProductUpdateDTO productUpdateDTO,
+                                           @RequestParam(value = "image", required = false) MultipartFile file) {
+        ProductDTO updatedProduct = productService.updateProduct( productUpdateDTO, file, id);
+        return ResponseEntity.ok(updatedProduct);
     }
 
     //delete product
