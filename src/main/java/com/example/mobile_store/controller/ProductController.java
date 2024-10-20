@@ -1,9 +1,7 @@
 package com.example.mobile_store.controller;
 
 
-import com.example.mobile_store.dto.ProductCreateDTO;
-import com.example.mobile_store.dto.ProductDTO;
-import com.example.mobile_store.dto.ProductUpdateDTO;
+import com.example.mobile_store.dto.*;
 import com.example.mobile_store.entity.Product;
 import com.example.mobile_store.service.ProductService;
 import com.example.mobile_store.service.UploadService;
@@ -43,9 +41,8 @@ public class ProductController {
 
     //get all products paginated
     @GetMapping
-    public ResponseEntity<?> getAllProducts(@RequestParam(defaultValue = "1") Integer pageNo,
-                                           @RequestParam(defaultValue = "2") Integer pageSize) {
-        Pageable pageable = PageRequest.of(pageNo-1, pageSize);
+    public ResponseEntity<?> getAllProducts(@ModelAttribute PaginationDTO paginationDTO) {
+        Pageable pageable = PageRequest.of(paginationDTO.getPageNo()-1, paginationDTO.getPageSize());
         return ResponseEntity.ok(productService.getAllProducts(pageable));
     }
 
@@ -71,16 +68,11 @@ public class ProductController {
         return ResponseEntity.ok().build();
     }
 
-    //search product by name
-    @GetMapping("/search")
-    public ResponseEntity<?> searchProductByName(@RequestParam String name) {
-        List<ProductDTO> productDTOS = productService.searchProductByName(name);
-
-        if (productDTOS.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No product found with name: " + name);
-        }
-
-        return ResponseEntity.ok(productDTOS);
+    //filter products
+    @GetMapping("/filter")
+    public ResponseEntity<?> filterProducts(@ModelAttribute PaginationDTO paginationDTO, @ModelAttribute ProductCriteriaDTO productCriteriaDTO) {
+        Pageable pageable = PageRequest.of(paginationDTO.getPageNo()-1, paginationDTO.getPageSize());
+        return ResponseEntity.ok(productService.filterProducts(pageable, productCriteriaDTO));
 
     }
 
