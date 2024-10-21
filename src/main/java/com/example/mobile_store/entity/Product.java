@@ -32,12 +32,6 @@ public class Product {
 
     private String image;
 
-    @OneToMany(mappedBy = "product")
-    private List<Cart> carts;
-
-    @OneToMany(mappedBy = "product")
-    private List<Order> orders;
-
     // Getters and Setters
 
     public Integer getId() {
