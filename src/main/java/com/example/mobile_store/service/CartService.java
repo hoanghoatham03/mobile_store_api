@@ -54,4 +54,11 @@ public class CartService {
                 .map(cartMapper::toDTO)
                 .collect(Collectors.toList());
     }
+
+    public List<CartDTO> getCart() {
+        List<Cart> carts = cartRepository.findAll();
+        return carts.stream()
+                .map(cartMapper::toDTO)
+                .collect(Collectors.toList());
+    }
 }
