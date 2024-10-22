@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,6 +30,7 @@ public class ProductController {
 
     //create product
     @PostMapping(value = "/create", consumes = {"multipart/form-data"})
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProductDTO> createProduct(
             @Valid @ModelAttribute ProductCreateDTO productCreateDTO,
             @RequestParam("image") MultipartFile file) {
@@ -55,6 +57,7 @@ public class ProductController {
 
     //update product
     @PutMapping(value = "/{id}", consumes = {"multipart/form-data"})
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> updateProduct(@PathVariable Integer id, @Valid @ModelAttribute ProductUpdateDTO productUpdateDTO,
                                            @RequestParam(value = "image", required = false) MultipartFile file) {
         ProductDTO updatedProduct = productService.updateProduct( productUpdateDTO, file, id);
@@ -63,6 +66,7 @@ public class ProductController {
 
     //delete product
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteProduct(@PathVariable Integer id) {
         productService.deleteProduct(id);
         return ResponseEntity.ok().build();

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -44,7 +45,13 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(auths -> auths
                         .requestMatchers("/api/users/**").permitAll()
-                        .anyRequest().permitAll())
+                        .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/products/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/products/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasRole("ADMIN")
+                        .requestMatchers("/api/carts/**").hasRole("USER")
+                        .requestMatchers("/api/orders/**").hasAnyRole("USER", "ADMIN")
+                        .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults());
 
         return http.build();

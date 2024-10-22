@@ -20,7 +20,6 @@ public class Order {
 
     private String status;
 
-    private boolean isDeleted = false;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -77,13 +76,6 @@ public class Order {
         this.user = user;
     }
 
-    public boolean getIsDeleted() {
-        return isDeleted;
-    }
-
-    public void setIsDeleted(boolean isDeleted) {
-        this.isDeleted = isDeleted;
-    }
 
     public List<OrderDetail> getOrderDetails() {
         return orderDetails;

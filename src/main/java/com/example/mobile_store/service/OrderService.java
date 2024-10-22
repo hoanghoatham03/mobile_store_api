@@ -2,6 +2,7 @@ package com.example.mobile_store.service;
 
 import com.example.mobile_store.entity.*;
 import com.example.mobile_store.repository.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -58,6 +59,16 @@ public class OrderService {
         //delete cart
         cartDetailRepository.deleteAll(cartDetails);
         cartRepository.delete(cart);
+    }
+
+    //get all orders for Admin
+    public List<Order> getAllOrders() {
+        return orderRepository.findAll();
+    }
+
+    //get order for user
+    public Order getOrders(int userId, int orderId) {
+        return orderRepository.findById(orderId).orElse(null);
     }
 
 
