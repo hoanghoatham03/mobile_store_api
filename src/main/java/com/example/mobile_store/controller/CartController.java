@@ -20,10 +20,23 @@ public class CartController {
         this.cartService = cartService;
     }
 
+    //get cart
+    @GetMapping("/{userId}")
+    public ResponseEntity<?> getCart(@PathVariable int userId) {
+        return ResponseEntity.ok(cartService.getCart(userId));
+    }
+
     //add product to cart
     @PostMapping("/add")
     public ResponseEntity<?> addToCart(@Valid @RequestBody  CartRequestDTO cartRequestDTO) {
         cartService.addToCart(cartRequestDTO.getProductId(), cartRequestDTO.getQuantity(), cartRequestDTO.getUserId());
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    //remove product from cart
+    @DeleteMapping("/remove")
+    public ResponseEntity<?> removeFromCart(@Valid @RequestBody  CartRequestDTO cartRequestDTO) {
+        cartService.removeFromCart(cartRequestDTO.getProductId(), cartRequestDTO.getUserId());
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

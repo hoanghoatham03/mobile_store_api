@@ -1,5 +1,6 @@
 package com.example.mobile_store.service;
 
+import com.example.mobile_store.dto.CartDTO;
 import com.example.mobile_store.entity.Cart;
 import com.example.mobile_store.entity.CartDetail;
 import com.example.mobile_store.entity.Product;
@@ -26,6 +27,24 @@ public class CartService {
         this.orderRepository = orderRepository;
         this.orderDetailRepository = orderDetailRepository;
         this.userRepository = userRepository;
+    }
+
+    //get cart
+    public CartDTO getCart(int userId) {
+        //get user
+        User user = userRepository.findById(userId).get();
+
+        //get cart
+        Cart cart = cartRepository.findByUser(user);
+
+        //get sum product
+        int sumProduct = 0;
+        if (cart != null) {
+           //get from quantity
+            sumProduct = cartDetailRepository.sumQuantityByCart(cart.getId());
+        }
+
+        return new CartDTO(cart.getId(), cart.getTotal(), user.getId(), sumProduct);
     }
 
     //add to cart
@@ -95,7 +114,10 @@ public class CartService {
                 cartDetailRepository.delete(cartDetail);
                 cart.setTotal(cart.getTotal() - cartDetail.getPrice());
             }
+
+            cartRepository.save(cart);
         }
+
 
     }
 
