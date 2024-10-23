@@ -72,7 +72,6 @@ public class OrderController {
         User user = (User) authentication.getPrincipal();
         String role = user.getRole().getName();
         status = status.replace("\"", "").toUpperCase();
-        System.out.println("Status: " + status);
 
 
         if (role.equals("USER")) {
