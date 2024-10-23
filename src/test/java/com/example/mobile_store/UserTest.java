@@ -6,6 +6,7 @@ import com.example.mobile_store.service.UserService;
 import com.example.mobile_store.security.JwtTokenProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,6 +17,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -67,5 +69,31 @@ public class UserTest {
 
         // Verify the interactions with the mock
         resultActions.andExpect(status().isCreated());
+    }
+
+    @Test
+    public void testLogin() throws Exception {
+        // Create a LoginDTO object
+        LoginDTO loginDTO = new LoginDTO();
+        loginDTO.setUsername("testuser");
+        loginDTO.setPassword("password123");
+
+        // Mock authentication success
+        Authentication authentication = Mockito.mock(Authentication.class);
+        given(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .willReturn(authentication);
+
+        // Mock JWT token generation
+        String expectedToken = "test.jwt.token";
+        given(jwtTokenProvider.generateToken(any(Authentication.class)))
+                .willReturn(expectedToken);
+
+        // Perform the POST request
+        mockMvc.perform(post(endpoint + "/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginDTO)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string(expectedToken));
     }
 }
