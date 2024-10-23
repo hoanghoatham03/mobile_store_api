@@ -7,6 +7,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class OrderService {
@@ -15,6 +16,7 @@ public class OrderService {
     private final CartRepository cartRepository;
     private final CartDetailRepository cartDetailRepository;
     private final UserRepository userRepository;
+
 
 
     public OrderService(OrderRepository orderRepository, OrderDetailRepository orderDetailRepository, CartRepository cartRepository, CartDetailRepository cartDetailRepository, UserRepository userRepository) {
@@ -42,7 +44,7 @@ public class OrderService {
         Order order = new Order();
         order.setUser(user);
         order.setTotal(cart.getTotal());
-        order.setStatus("pending");
+        order.setStatus("PENDING");
         orderRepository.save(order);
 
         //create order detail
@@ -77,6 +79,13 @@ public class OrderService {
             return null;
         }
         return new OrderDTO(order.getId(), order.getOrderDate(), order.getTotal(), order.getStatus(), order.getUser().getId());
+    }
+
+    //update order status
+    public void updateOrderStatus(int orderId, String status) {
+        Order order = orderRepository.findById(orderId).get();
+        order.setStatus(status);
+        orderRepository.save(order);
     }
 
 
