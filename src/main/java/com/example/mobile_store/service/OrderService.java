@@ -1,5 +1,6 @@
 package com.example.mobile_store.service;
 
+import com.example.mobile_store.dto.OrderDTO;
 import com.example.mobile_store.entity.*;
 import com.example.mobile_store.repository.*;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -62,13 +63,20 @@ public class OrderService {
     }
 
     //get all orders for Admin
-    public List<Order> getAllOrders() {
-        return orderRepository.findAll();
+    public List<OrderDTO> getAllOrders() {
+        List<Order> orders =  orderRepository.findAll();
+
+        return orders.stream().map(order ->
+                new OrderDTO(order.getId(), order.getOrderDate(), order.getTotal(), order.getStatus(), order.getUser().getId())).toList();
     }
 
     //get order for user
-    public Order getOrders(int userId, int orderId) {
-        return orderRepository.findById(orderId).orElse(null);
+    public OrderDTO getOrder(int orderId, int userId) {
+        Order order = orderRepository.findById(orderId).get();
+        if (order.getUser().getId() != userId) {
+            return null;
+        }
+        return new OrderDTO(order.getId(), order.getOrderDate(), order.getTotal(), order.getStatus(), order.getUser().getId());
     }
 
 

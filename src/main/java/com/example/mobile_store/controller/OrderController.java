@@ -23,6 +23,7 @@ public class OrderController {
 
     //checkout
     @PostMapping("/checkout/{userId}")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> checkout(@PathVariable int userId) {
         orderService.addOrder(userId);
         return ResponseEntity.ok().build();
@@ -44,7 +45,7 @@ public class OrderController {
 
         User user = (User) authentication.getPrincipal();
         int userId = user.getId();
-        return ResponseEntity.ok(orderService.getOrders(userId, orderId));
+        return ResponseEntity.ok(orderService.getOrder(orderId, userId));
     }
 
 
