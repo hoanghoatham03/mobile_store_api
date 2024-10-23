@@ -15,6 +15,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.web.multipart.MultipartFile;
@@ -97,6 +98,7 @@ public class ProductTest {
 
 
     @Test
+    @WithMockUser(roles = {"ADMIN"})
     public void testCreate() throws Exception {
         // Create ProductCreateDTO
         ProductCreateDTO productCreateDTO = new ProductCreateDTO();
@@ -176,6 +178,7 @@ public class ProductTest {
     }
 
     @Test
+    @WithMockUser(roles = {"ADMIN"})
     public void testUpdateProduct() throws Exception {
         int productId = 1;
         ProductUpdateDTO productUpdateDTO = new ProductUpdateDTO();
@@ -211,6 +214,7 @@ public class ProductTest {
     }
 
     @Test
+    @WithMockUser(roles = {"ADMIN"})
     public void testDeleteProduct() throws Exception {
         int productId = 1;
 
