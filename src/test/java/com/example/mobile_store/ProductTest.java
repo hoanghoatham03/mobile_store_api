@@ -98,6 +98,7 @@ public class ProductTest {
 
 
     @Test
+    @WithMockUser(roles = {"ADMIN"})
     public void testCreate() throws Exception {
         // Create ProductCreateDTO
         ProductCreateDTO productCreateDTO = new ProductCreateDTO();
@@ -177,6 +178,7 @@ public class ProductTest {
     }
 
     @Test
+    @WithMockUser(roles = {"ADMIN"})
     public void testUpdateProduct() throws Exception {
         int productId = 1;
         ProductUpdateDTO productUpdateDTO = new ProductUpdateDTO();
@@ -212,6 +214,7 @@ public class ProductTest {
     }
 
     @Test
+    @WithMockUser(roles = {"ADMIN"})
     public void testDeleteProduct() throws Exception {
         int productId = 1;
 
