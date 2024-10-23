@@ -10,6 +10,7 @@ import com.example.mobile_store.repository.ProductRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,7 +38,7 @@ public class ProductService {
         return productRepository.existsByProductName(name);
     }
 
-    //create product
+    //create product by admin
     public ProductDTO createProduct(ProductCreateDTO productCreateDTO, MultipartFile file) {
 
         Product product = productMapper.toEntity(productCreateDTO);

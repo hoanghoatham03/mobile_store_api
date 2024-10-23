@@ -1,36 +1,34 @@
-package com.example.mobile_store.entity;
+package com.example.mobile_store.dto;
 
+import com.example.mobile_store.entity.OrderDetail;
+import com.example.mobile_store.entity.User;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-//Order:id, userId(n-1), productId(n-1), OrderDate, quantity, price, total
-@Entity
-@Table(name = "Orders")
-public class Order {
+public class OrderDTO {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "order_date", nullable = false)
     private LocalDateTime orderDate;
 
     private Double total;
 
     private String status;
 
+    private int user_id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    public OrderDTO() {
+    }
 
-    @OneToMany(mappedBy = "order")
-    private List<OrderDetail> orderDetails;
-
-    @PrePersist
-    public void prePersist() {
-        this.orderDate = LocalDateTime.now();
+    public OrderDTO(Integer id, LocalDateTime orderDate, Double total, String status, int user_id) {
+        this.id = id;
+        this.orderDate = orderDate;
+        this.total = total;
+        this.status = status;
+        this.user_id = user_id;
     }
 
     // Getters and Setters
@@ -68,20 +66,11 @@ public class Order {
         this.status = status;
     }
 
-    public User getUser() {
-        return user;
+    public int getUser_id() {
+        return user_id;
     }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-
-    public List<OrderDetail> getOrderDetails() {
-        return orderDetails;
-    }
-
-    public void setOrderDetails(List<OrderDetail> orderDetails) {
-        this.orderDetails = orderDetails;
+    public void setUser_id(int user_id) {
+        this.user_id = user_id;
     }
 }

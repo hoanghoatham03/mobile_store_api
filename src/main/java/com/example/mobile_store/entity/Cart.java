@@ -2,7 +2,9 @@ package com.example.mobile_store.entity;
 
 import jakarta.persistence.*;
 
-//Cart: id, productname, quantity, unitPrice,price, action, userId(n-1), ,productId(n-1)
+import java.util.List;
+
+
 @Entity
 @Table(name = "Cart")
 public class Cart {
@@ -10,27 +12,18 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "product_name")
-    private String productName;
+    private Double total;
 
-    private Integer quantity;
-
-    @Column(name = "unit_price")
-    private Double unitPrice;
-
-    private Double price;
-
-    private String action;
-
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne()
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
-    private Product product;
+    @OneToMany(mappedBy = "cart")
+    private List<CartDetail> cartDetails;
+
 
     // Getters and Setters
+
 
     public Integer getId() {
         return id;
@@ -38,46 +31,6 @@ public class Cart {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public String getProductName() {
-        return productName;
-    }
-
-    public void setProductName(String productName) {
-        this.productName = productName;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
-
-    public Double getUnitPrice() {
-        return unitPrice;
-    }
-
-    public void setUnitPrice(Double unitPrice) {
-        this.unitPrice = unitPrice;
-    }
-
-    public Double getPrice() {
-        return price;
-    }
-
-    public void setPrice(Double price) {
-        this.price = price;
-    }
-
-    public String getAction() {
-        return action;
-    }
-
-    public void setAction(String action) {
-        this.action = action;
     }
 
     public User getUser() {
@@ -88,11 +41,19 @@ public class Cart {
         this.user = user;
     }
 
-    public Product getProduct() {
-        return product;
+    public Double getTotal() {
+        return total;
     }
 
-    public void setProduct(Product product) {
-        this.product = product;
+    public void setTotal(Double total) {
+        this.total = total;
+    }
+
+    public List<CartDetail> getCartDetails() {
+        return cartDetails;
+    }
+
+    public void setCartDetails(List<CartDetail> cartDetails) {
+        this.cartDetails = cartDetails;
     }
 }
