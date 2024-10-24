@@ -5,6 +5,7 @@ import com.example.mobile_store.dto.ProductCriteriaDTO;
 import com.example.mobile_store.dto.ProductDTO;
 import com.example.mobile_store.dto.ProductUpdateDTO;
 import com.example.mobile_store.entity.Product;
+import com.example.mobile_store.exception.NotFoundException;
 import com.example.mobile_store.mapper.ProductMapper;
 import com.example.mobile_store.repository.ProductRepository;
 import org.springframework.data.domain.Page;
@@ -26,6 +27,8 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
     private final UploadService uploadService;
+    private final double MAX_PRICE = 20000000;
+    private final double MIN_PRICE = 5000000;
 
     final String IMAGE_PATH = "http://localhost:8080/resources/images/product/";
     public ProductService(ProductRepository productRepository,ProductMapper productMapper,UploadService uploadService) {
@@ -71,10 +74,7 @@ public class ProductService {
 
     //view product by id
     public ProductDTO getProductById(Integer id) {
-        Product product = productRepository.findById(id).orElse(null);
-        if (product == null) {
-            return null;
-        }
+        Product product = productRepository.findById(id).orElseThrow(() -> new NotFoundException(id));
 
         ProductDTO productDTO = productMapper.toDTO(product);
 
@@ -83,10 +83,7 @@ public class ProductService {
 
     //update product
     public ProductDTO updateProduct(ProductUpdateDTO productUpdateDTO, MultipartFile file, Integer id) {
-        Product product = productRepository.findById(id).orElse(null);
-        if (product == null) {
-            return null;
-        }
+        Product product = productRepository.findById(id).orElseThrow(() -> new NotFoundException(id));
 
         if (productUpdateDTO.getProductName() != null) {
             product.setProductName(productUpdateDTO.getProductName());
@@ -126,6 +123,9 @@ public class ProductService {
 
     //delete product
     public void deleteProduct(Integer id) {
+        if (!productRepository.existsById(id)) {
+            throw new NotFoundException(id);
+        }
         productRepository.deleteById(id);
     }
 
@@ -146,10 +146,10 @@ public class ProductService {
             List<String> priceList = productCriteriaDTO.getPrice().get();
             if (priceList.size() == 1) {
                 double price = Double.parseDouble(priceList.get(0));
-                if (price == 20000000) {
+                if (price == MAX_PRICE) {
                     combinedSpec = combinedSpec.and(ProductSpecs.productPriceGreaterThan(price));
                 }
-                if (price == 5000000) {
+                if (price == MIN_PRICE) {
                     combinedSpec = combinedSpec.and(ProductSpecs.productPriceLessThan(price));
                 }
 

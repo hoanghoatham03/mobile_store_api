@@ -37,7 +37,7 @@ public class CartController {
     public ResponseEntity<?> addToCart(@Valid @RequestBody  CartRequestDTO cartRequestDTO) {
 
         cartService.addToCart(cartRequestDTO.getProductId(), cartRequestDTO.getQuantity(), cartRequestDTO.getUserId());
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body("Product added to cart successfully");
     }
 
     //remove product from cart
@@ -45,6 +45,6 @@ public class CartController {
     @PreAuthorize("#cartRequestDTO.userId == authentication.principal.id")
     public ResponseEntity<?> removeFromCart(@Valid @RequestBody  CartRequestDTO cartRequestDTO) {
         cartService.removeFromCart(cartRequestDTO.getProductId(), cartRequestDTO.getUserId());
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.OK).body("Product removed from cart successfully");
     }
 }

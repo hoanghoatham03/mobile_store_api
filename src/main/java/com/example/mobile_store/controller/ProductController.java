@@ -3,8 +3,9 @@ package com.example.mobile_store.controller;
 
 import com.example.mobile_store.dto.*;
 import com.example.mobile_store.entity.Product;
+import com.example.mobile_store.exception.ImageRequiredException;
+import com.example.mobile_store.exception.NotFoundException;
 import com.example.mobile_store.service.ProductService;
-import com.example.mobile_store.service.UploadService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,11 +22,9 @@ import java.util.List;
 @RequestMapping("/api/products")
 public class ProductController {
     private final ProductService productService;
-    private final UploadService uploadService;
 
-    public ProductController(ProductService productService, UploadService uploadService) {
+    public ProductController(ProductService productService) {
         this.productService = productService;
-        this.uploadService = uploadService;
     }
 
     //create product
@@ -33,7 +32,10 @@ public class ProductController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProductDTO> createProduct(
             @Valid @ModelAttribute ProductCreateDTO productCreateDTO,
-            @RequestParam("image") MultipartFile file) {
+            @Valid @RequestParam("image") MultipartFile file) {
+        if (file.isEmpty()) {
+            throw new ImageRequiredException("Image is required");
+        }
 
         ProductDTO createdProduct = productService.createProduct(productCreateDTO, file);
 
@@ -44,8 +46,14 @@ public class ProductController {
     //get all products paginated
     @GetMapping
     public ResponseEntity<?> getAllProducts(@ModelAttribute PaginationDTO paginationDTO) {
-        Pageable pageable = PageRequest.of(paginationDTO.getPageNo()-1, paginationDTO.getPageSize());
-        return ResponseEntity.ok(productService.getAllProducts(pageable));
+        Pageable pageable = PageRequest.of(paginationDTO.getPageNo() - 1, paginationDTO.getPageSize());
+        List<ProductDTO> products = productService.getAllProducts(pageable);
+
+        if (products.isEmpty()) {
+            throw new NotFoundException("Not found any product");
+        }
+
+        return ResponseEntity.ok(products);
     }
 
 
@@ -60,7 +68,8 @@ public class ProductController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> updateProduct(@PathVariable Integer id, @Valid @ModelAttribute ProductUpdateDTO productUpdateDTO,
                                            @RequestParam(value = "image", required = false) MultipartFile file) {
-        ProductDTO updatedProduct = productService.updateProduct( productUpdateDTO, file, id);
+        ProductDTO updatedProduct = productService.updateProduct(productUpdateDTO, file, id);
+
         return ResponseEntity.ok(updatedProduct);
     }
 
@@ -69,14 +78,22 @@ public class ProductController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteProduct(@PathVariable Integer id) {
         productService.deleteProduct(id);
+
         return ResponseEntity.ok().build();
     }
 
     //filter products
     @GetMapping("/filter")
     public ResponseEntity<?> filterProducts(@ModelAttribute PaginationDTO paginationDTO, @ModelAttribute ProductCriteriaDTO productCriteriaDTO) {
-        Pageable pageable = PageRequest.of(paginationDTO.getPageNo()-1, paginationDTO.getPageSize());
-        return ResponseEntity.ok(productService.filterProducts(pageable, productCriteriaDTO));
+        Pageable pageable = PageRequest.of(paginationDTO.getPageNo() - 1, paginationDTO.getPageSize());
+
+        List<ProductDTO> products = productService.filterProducts(pageable, productCriteriaDTO);
+
+        if (products.isEmpty()) {
+            throw new NotFoundException("Not found any product");
+        }
+
+        return ResponseEntity.ok(products);
 
     }
 

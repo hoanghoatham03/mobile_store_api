@@ -36,6 +36,7 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity register(@RequestBody RegisterDTO registerDTO) {
         RegisterDTO user = userService.saveUser(registerDTO);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
@@ -45,6 +46,7 @@ public class UserController {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginDTO.getUsername(),
                             loginDTO.getPassword()));
+
             return ResponseEntity.ok(tokenProvider.generateToken(authentication));
         } catch (AuthenticationException e) {
             throw new InvalidCredentialsException("Invalid username or password");

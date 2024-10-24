@@ -2,6 +2,7 @@ package com.example.mobile_store.service;
 
 import com.example.mobile_store.dto.OrderDTO;
 import com.example.mobile_store.entity.*;
+import com.example.mobile_store.exception.NotFoundException;
 import com.example.mobile_store.repository.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -37,7 +38,7 @@ public class OrderService {
 
         //check if cart is null
         if (cart == null) {
-            return;
+            throw new NotFoundException("Cart is empty");
         }
 
         //create order
@@ -68,22 +69,28 @@ public class OrderService {
     public List<OrderDTO> getAllOrders() {
         List<Order> orders =  orderRepository.findAll();
 
+        if (orders.isEmpty()) {
+            throw new NotFoundException("No orders found");
+        }
+
         return orders.stream().map(order ->
                 new OrderDTO(order.getId(), order.getOrderDate(), order.getTotal(), order.getStatus(), order.getUser().getId())).toList();
     }
 
     //get order for user
     public OrderDTO getOrder(int orderId, int userId) {
-        Order order = orderRepository.findById(orderId).get();
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new NotFoundException(orderId));
+
         if (order.getUser().getId() != userId) {
             return null;
         }
+
         return new OrderDTO(order.getId(), order.getOrderDate(), order.getTotal(), order.getStatus(), order.getUser().getId());
     }
 
     //update order status
     public void updateOrderStatus(int orderId, String status) {
-        Order order = orderRepository.findById(orderId).get();
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new NotFoundException(orderId));
         order.setStatus(status);
         orderRepository.save(order);
     }
