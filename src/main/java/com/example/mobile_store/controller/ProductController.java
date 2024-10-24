@@ -3,6 +3,8 @@ package com.example.mobile_store.controller;
 
 import com.example.mobile_store.dto.*;
 import com.example.mobile_store.entity.Product;
+import com.example.mobile_store.exception.ImageRequiredException;
+import com.example.mobile_store.exception.NotFoundException;
 import com.example.mobile_store.service.ProductService;
 import com.example.mobile_store.service.UploadService;
 import jakarta.validation.Valid;
@@ -33,7 +35,10 @@ public class ProductController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProductDTO> createProduct(
             @Valid @ModelAttribute ProductCreateDTO productCreateDTO,
-            @RequestParam("image") MultipartFile file) {
+            @Valid @RequestParam("image") MultipartFile file) {
+        if (file.isEmpty()){
+            throw new ImageRequiredException("Image is required");
+        }
 
         ProductDTO createdProduct = productService.createProduct(productCreateDTO, file);
 
@@ -45,7 +50,13 @@ public class ProductController {
     @GetMapping
     public ResponseEntity<?> getAllProducts(@ModelAttribute PaginationDTO paginationDTO) {
         Pageable pageable = PageRequest.of(paginationDTO.getPageNo()-1, paginationDTO.getPageSize());
-        return ResponseEntity.ok(productService.getAllProducts(pageable));
+        List<ProductDTO> products = productService.getAllProducts(pageable);
+
+        if (products.isEmpty()){
+            throw new NotFoundException("Not found any product");
+        }
+
+        return ResponseEntity.ok(products);
     }
 
 
