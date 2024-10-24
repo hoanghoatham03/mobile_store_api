@@ -37,6 +37,10 @@ public class CartService {
         //get cart
         Cart cart = cartRepository.findByUser(user);
 
+        if (cart == null) {
+            return null;
+        }
+
         //get sum product
         int sumProduct = 0;
         if (cart != null) {
