@@ -1,100 +1,140 @@
 package com.example.mobile_store;
 
+import com.example.mobile_store.dto.CartDTO;
 import com.example.mobile_store.dto.CartRequestDTO;
-import com.example.mobile_store.entity.Cart;
-import com.example.mobile_store.entity.CartDetail;
-import com.example.mobile_store.entity.Product;
-import com.example.mobile_store.entity.User;
-import com.example.mobile_store.repository.CartDetailRepository;
-import com.example.mobile_store.repository.CartRepository;
-import com.example.mobile_store.repository.ProductRepository;
-import com.example.mobile_store.repository.UserRepository;
+import com.example.mobile_store.entity.*;
+import com.example.mobile_store.repository.*;
 import com.example.mobile_store.service.CartService;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-
-@SpringBootTest
-@AutoConfigureMockMvc
+@ExtendWith(MockitoExtension.class)
 public class CartTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @MockBean
-    private CartService cartService;
-
-    @MockBean
-    private UserRepository userRepository;
-
-    @MockBean
+    @Mock
     private CartRepository cartRepository;
 
-    @MockBean
-    private ProductRepository productRepository;
-
-    @MockBean
+    @Mock
     private CartDetailRepository cartDetailRepository;
 
-    private final String endpoint = "/api/carts/add";
+    @Mock
+    private ProductRepository productRepository;
+
+    @Mock
+    private UserRepository userRepository;
+
+    @InjectMocks
+    private CartService cartService;
+
+    private User testUser;
+    private Cart testCart;
+    private Product testProduct;
+    private CartDetail testCartDetail;
+    private List<CartDetail> testCartDetails;
+
+    @BeforeEach
+    void setUp() {
+        // Set up test user
+        testUser = new User();
+        testUser.setId(1);
+        testUser.setUsername("testUser");
+
+        // Set up test product
+        testProduct = new Product();
+        testProduct.setId(1);
+        testProduct.setProductName("Test Phone");
+        testProduct.setPrice(999.99);
+
+        // Set up test cart
+        testCart = new Cart();
+        testCart.setId(1);
+        testCart.setUser(testUser);
+        testCart.setTotal(999.99);
+
+        // Set up test cart detail with a valid price
+        testCartDetail = new CartDetail();
+        testCartDetail.setId(1);
+        testCartDetail.setCart(testCart);
+        testCartDetail.setProduct(testProduct);
+        testCartDetail.setQuantity(1);
+        testCartDetail.setProductName("Test Phone");
+        testCartDetail.setPrice(999.99);
+
+        testCartDetails = new ArrayList<>();
+        testCartDetails.add(testCartDetail);
+    }
+
 
     @Test
-    @WithMockUser(username = "user1", authorities = {"ROLE_USER"})
-    public void testAddToCart() throws Exception {
+    void testAddToCart() {
         // Arrange
         CartRequestDTO request = new CartRequestDTO();
         request.setProductId(1);
         request.setQuantity(2);
         request.setUserId(1);
 
-        User user = new User();
-        user.setId(1);
+        when(userRepository.findById(1)).thenReturn(Optional.of(testUser));
+        when(productRepository.findById(1)).thenReturn(Optional.of(testProduct));
+        when(cartRepository.findByUser(testUser)).thenReturn(testCart);
+        when(cartDetailRepository.findByCartAndProduct(testCart, testProduct)).thenReturn(null);
+        when(cartDetailRepository.save(any(CartDetail.class))).thenReturn(testCartDetail);
 
-        Product product = new Product();
-        product.setId(1);
-        product.setProductName("Test Product");
-        product.setPrice(100.0);
+        // Act
+        cartService.addToCart(1, 2, 1);
 
-        Cart cart = new Cart();
-        cart.setId(1);
-        cart.setUser(user);
-        cart.setTotal(0.0);
-
-        given(userRepository.findById(1)).willReturn(Optional.of(user));
-        given(productRepository.findById(1)).willReturn(Optional.of(product));
-        given(cartRepository.findByUser(user)).willReturn(cart);
-
-        // Act & Assert
-        mockMvc.perform(post(endpoint)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andDo(print())
-                .andExpect(status().isCreated());
-
-        // Verify service method was called with correct parameters
-        verify(cartService).addToCart(request.getProductId(), request.getQuantity(), request.getUserId());
+        // Assert
+        verify(cartDetailRepository, times(1)).save(any(CartDetail.class));
+        verify(cartRepository, times(1)).save(any(Cart.class));
     }
 
 
+    @Test
+    void testGetCart() {
+        // Arrange
+        when(userRepository.findById(1)).thenReturn(Optional.of(testUser));
+        when(cartRepository.findByUser(testUser)).thenReturn(testCart);
+        when(cartDetailRepository.sumQuantityByCart(testCart.getId())).thenReturn(1);
 
-    
+        // Act
+        CartDTO result = cartService.getCart(1);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.getId());
+        assertEquals(999.99, result.getTotal());
+        assertEquals(1, result.getUser_id());
+        assertEquals(1, result.getSumProduct());
+    }
+
+
+    @Test
+    void testRemoveFromCart() {
+        // Arrange
+        when(userRepository.findById(1)).thenReturn(Optional.of(testUser));
+        when(cartRepository.findByUser(testUser)).thenReturn(testCart);
+        when(productRepository.findById(1)).thenReturn(Optional.of(testProduct));
+        when(cartDetailRepository.findByCartAndProduct(testCart, testProduct)).thenReturn(testCartDetail);
+
+        // Act
+        cartService.removeFromCart(1, 1);
+
+        // Assert
+        verify(cartDetailRepository, times(1)).delete(testCartDetail);
+        verify(cartRepository, times(1)).save(testCart);
+        assertEquals(0.0, testCart.getTotal());
+    }
+
+
 }
